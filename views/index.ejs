@@ -1,0 +1,33 @@
+<a href="/dashboard" class="dashboard-button" style="background-color: red; color: black; font-weight: bold;">YOU CAN CLICK HERE TO ADD-EDIT-DELETE POSTS (if you are logged in)</a>
+<div class="author">
+  <h3 class="author__heading">You can see the latest posts here</h3>
+  <p class="author__body">Backend Web. </p>
+</div>
+
+<img src="/img/hero-image.webp" alt="person looking out through window" class="hero-image" width="981" height="528">
+
+<section class="articles">
+  <h2 class="articles__heading">Latest Posts</h2>
+
+  <ul class="article-ul" style="background-color: lightblue;">
+    <% data.forEach(post => { %>
+      <li>
+        <a href="/post/<%= post._id %>">
+          <span><%= post.title %></span>
+          <span class="article-list__date"><%= post.createdAt.toDateString() %></span>
+        </a>
+      </li>
+    <% }) %>
+  </ul>
+
+
+  <% if (nextPage !== null) { %>
+    <a href="/?page=<%= nextPage %>" class="pagination">&lt; View Older Posts</a>
+  <% } %>
+ 
+
+  
+
+
+
+</section>
