@@ -53,7 +53,7 @@ router.get('/post/:id', async (req, res) => {
 
     const locals = {
       title: data.title,
-      description: "I created this with NodeJs, Express & MongoDb.",
+      description: "Getting the post",
     }
 
     res.render('post', { 
@@ -76,7 +76,7 @@ router.post('/search', async (req, res) => {
   try {
     const locals = {
       title: "Seach",
-      description: "I created this with NodeJs, Express & MongoDb."
+      description: "Search"
     }
 
     let searchTerm = req.body.searchTerm;

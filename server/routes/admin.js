@@ -130,25 +130,30 @@ router.get('/add-post', authMiddleware, async (req, res) => {
 /**
  * POST /
  * Admin - Create New Post
-*/
+ */
 router.post('/add-post', authMiddleware, async (req, res) => {
   try {
-    try {
-      const newPost = new Post({
-        title: req.body.title,
-        body: req.body.body
-      });
+    const newPost = new Post({
+      title: req.body.title,
+      body: req.body.body
+    });
 
-      await Post.create(newPost);
-      res.redirect('/dashboard');
-    } catch (error) {
-      console.log(error);
+    if (req.body.title.length < 9) {
+      return res.status(400).json({ message: 'Title must be at least 9 characters' });
     }
 
+    if (req.body.body.length < 9) {
+      return res.status(400).json({ message: 'Body must be at least 9 characters' });
+    }
+
+    await Post.create(newPost);
+    res.status(200).json({ message: 'Post created successfully' });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while creating the post' });
   }
 });
+
 
 
 /**
