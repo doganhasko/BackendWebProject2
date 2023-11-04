@@ -212,36 +212,39 @@ router.put('/edit-post/:id', authMiddleware, async (req, res) => {
 */
 
 router.post('/register', async (req, res) => {
-
   const { username, password } = req.body;
 
-  if(username.length < 9){
-    return res.status(400).json({message: 'Username must be at least 9 characters'});
+  if (username.length < 9) {
+    return res.status(400).json({ message: 'Username must be at least 9 characters' });
   }
 
-  if(password.length < 9){
-    return res.status(400).json({message: 'Password must be at least 9 characters'});
+  if (password.length < 9) {
+    return res.status(400).json({ message: 'Password must be at least 9 characters' });
   }
 
-  // If validation passes, hash password and create user
+  // Check if the username contains numbers
+  if (/\d/.test(username)) {
+    return res.status(400).json({ message: 'Username cannot contain numbers' });
+  }
+
+  // If validation passes, hash the password and create the user
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const user = await User.create({ 
-      username, 
-      password: hashedPassword
+    const user = await User.create({
+      username,
+      password: hashedPassword,
     });
-    res.status(201).json({message: 'User Created', user});
-  
+    res.status(201).json({ message: 'User Created', user });
   } catch (error) {
     // Handle mongoose errors
-    if(error.code === 11000) {
-      return res.status(409).json({message: 'Username already in use'});
+    if (error.code === 11000) {
+      return res.status(409).json({ message: 'Username already in use' });
     }
-    res.status(500).json({message: 'Internal server error'});
+    res.status(500).json({ message: 'Internal server error' });
   }
-
 });
+
 
 
 /**

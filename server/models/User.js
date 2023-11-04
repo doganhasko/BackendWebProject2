@@ -6,13 +6,19 @@ const UserSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    minlength: [9, 'Username must be at least 9 characters'] 
-
+    validate: {
+      validator: function(value) {
+        return !/\d/.test(value);
+      },
+      message: 'Username cannot contain numbers'
+    },
+    minlength: [9, 'Username must be at least 9 characters']
+  
   },
   password: {
     type: String,
     required: true,
-    minlength: [9, 'Username must be at least 9 characters'] 
+    minlength: [9, 'Password must be at least 9 characters'] 
 
   }
 });

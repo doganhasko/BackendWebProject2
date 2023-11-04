@@ -1,3 +1,4 @@
+Git link= https://github.com/doganhasko/BackendWebProject2
 I am using Mongo as Database. The reason I choose Mongo is => in my Laravel project I used MySql, so I wanted to learn something new. And I heard a lot about Mongo, so I thought I should learn it.
     I used nodemon. and embedded js. Also used Cookies in my website. 
     For frontend I used= https://startbootstrap.com/ but Ofcourse I modified it like i wanted.
