@@ -338,3 +338,15 @@ img {
 .pagination:hover {
   color: var(--black);
 }
+
+.update-button {
+  background-color: green;
+  color: white;
+  /* Add any other styles you want */
+}
+
+.delete-button {
+  background-color: red;
+  color: white;
+  /* Add any other styles you want */
+}

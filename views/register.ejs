@@ -1,0 +1,33 @@
+
+<h3>Register</h3>
+<p  style="background-color: lightblue;">----Username and Password MUST be more than 5 characters, Username cannot contain Number and you cannot create a new user with an already existing username. Username cannot contain numbers. Phone number should start with +32 . Email has to be a valid address. Otherwise you get an error (Backend error not frontend!) ----</p>
+<form action="/register" method="POST" onsubmit="return registerUser();">
+
+  <label for="username"><b>Username</b></label>
+  <input type="text" placeholder="Enter Username" name="username">
+
+  <label for="password"><b>Password</b></label>
+  <input type="password" placeholder="Enter Password" name="password">
+
+  <!-- Confirm Password -->
+  <label for="confirmPassword"><b>Confirm Password</b></label>
+  <input type="password" placeholder="Confirm Password" name="confirmPassword">
+
+  <!-- Email -->
+  <label for="email"><b>Email</b></label>
+  <input type="text" placeholder="Enter Email" name="email">
+
+  <!-- Phone Number -->
+  <label for="phone"><b>Phone Number</b></label>
+  <input type="text" placeholder="Enter Phone Number" name="phone">
+
+  <!-- Address -->
+  <label for="address"><b>Address</b></label>
+  <input type="text" placeholder="Enter Address" name="address">
+
+  <input type="submit" value="Register" class="btn">
+
+<div id="registerMessage"></div>
+
+</form>
+

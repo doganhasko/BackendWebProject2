@@ -25,7 +25,7 @@ const authMiddleware = (req, res, next ) => {
     req.userId = decoded.userId;
     next();
   } catch(error) {
-    res.status(401).json( { message: 'YOU HAVE TO LOGIN'} );
+    res.status(401).json( { message: 'An error occured'} );
   }
 }
 
@@ -88,12 +88,14 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
       title: 'Dashboard',
       description: 'Dashboard'
     }
+    const token = req.cookies.token;
 
     const data = await Post.find();
     res.render('admin/dashboard', {
       locals,
       data,
-      layout: adminLayout
+      layout: adminLayout,
+      token
     });
 
   } catch (error) {
@@ -204,27 +206,62 @@ router.put('/edit-post/:id', authMiddleware, async (req, res) => {
 
 });
 
+router.get('/register', (req, res) => {
+  res.render('register', {
+    currentRoute: '/register'
+  });
+});
 
 
 /**
  * POST /
  * Admin - Register
 */
+// Set token on login
+// router.post('/admin', (req, res) => {
+//   // Login logic
+
+//   const token = jwt.sign({ userId: user._id }, jwtSecret) 
+//   res.cookie('token', token, { httpOnly: true })
+  
+//   res.redirect('/dashboard')
+// })
+
+// Clear cookie on logout
+router.get('/logout', (req, res) => {
+  res.clearCookie('token')
+  res.redirect('/')
+})
 
 router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password,email,phone,address,confirmPassword } = req.body;
 
-  if (username.length < 9) {
-    return res.status(400).json({ message: 'Username must be at least 9 characters' });
+  if (username.length < 5) {
+    return res.status(400).json({ message: 'Username must be at least 5 characters' });
   }
 
-  if (password.length < 9) {
-    return res.status(400).json({ message: 'Password must be at least 9 characters' });
+  if (password.length < 5) {
+    return res.status(400).json({ message: 'Password must be at least 5 characters' });
   }
 
   // Check if the username contains numbers
   if (/\d/.test(username)) {
     return res.status(400).json({ message: 'Username cannot contain numbers' });
+  }
+
+  // Validate email
+  if (!/\S+@\S+\.\S+/.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+
+  // Validate phone
+  if (!phone.startsWith('+32')) {
+    return res.status(400).json({ message: 'Phone number must start with +32' });
+  }
+
+  // Check if password and confirm password match
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: 'Password and Confirm Password do not match' });
   }
 
   // If validation passes, hash the password and create the user
@@ -234,6 +271,9 @@ router.post('/register', async (req, res) => {
     const user = await User.create({
       username,
       password: hashedPassword,
+      email,
+      address,
+      phone
     });
     res.status(201).json({ message: 'User Created', user });
   } catch (error) {
@@ -272,6 +312,94 @@ router.get('/logout', (req, res) => {
   //res.json({ message: 'Logout successful.'});
   res.redirect('/');
 });
+
+
+// GET /profile - User profile page
+router.get('/profile', authMiddleware, async (req, res) => {
+  try {
+    // Get user information from the database using req.userId
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const token = req.cookies.token;
+
+    res.render('profile', {
+      
+        title: 'Profile',
+        description: 'User Profile',
+        user,
+        currentRoute: '/profile',
+        token,
+      
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+// POST /profile - Update user profile
+router.post('/profile', authMiddleware, async (req, res) => {
+  try {
+    // Get user data from the request body
+    const { username, email, phone,address } = req.body;
+
+    // Update user information in the database
+    const updatedUser = await User.findByIdAndUpdate(
+      req.userId,
+      { username, email, phone,address },
+      { new: true } // Return the updated user
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const token = req.cookies.token;
+
+    res.render('profile', {
+      
+        title: 'Profile',
+        description: 'User Profile',
+        user: updatedUser,
+        currentRoute: '/profile',
+        token,
+      
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+// DELETE profile
+router.post('/profile/delete', authMiddleware, async (req, res) => {
+  try {
+    // Get user ID from the request
+    const userId = req.userId;
+
+    // Delete the user from the database
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Clear the authentication token
+    res.clearCookie('token');
+
+    // Redirect to the home page
+    res.redirect('/');
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 
 
 module.exports = router;

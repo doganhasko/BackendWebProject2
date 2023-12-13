@@ -10,11 +10,28 @@
         <a href="/about" class="<%= isActiveRoute('/about', currentRoute) %>">About</a>
       </li>
 
-      <li>
-        <a href="/admin" class="<%= isActiveRoute('/admin', currentRoute) %>">Log in</a>
-      </li>
-    </ul>
 
+      <% if (typeof token !== 'undefined') { %>
+        <!-- User is logged in, show "My Profile" and "Log out" -->
+        <li>
+          <a href="/dashboard" class="<%= isActiveRoute('/about', currentRoute) %>">Edit Blog</a>
+        </li>
+        <li>
+          <a href="/profile">My Profile</a>
+        </li>
+        <li>
+          <a href="/logout">Log out</a>
+        </li>
+      <% } else { %>
+        <!-- User is not logged in, show "Log in" -->
+        <li>
+          <a href="/admin" class="<%= isActiveRoute('/admin', currentRoute) %>">Log in</a>
+        </li>
+        <li>
+          <a href="/register" class="<%= isActiveRoute('/register', currentRoute) %>">Register</a>
+        </li>
+      <% } %>
+    </ul>
   </nav>
 
   <div class="header__button">
@@ -26,5 +43,4 @@
       </svg>
     </button>
   </div>
-
 </header>

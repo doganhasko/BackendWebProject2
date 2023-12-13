@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Post = require('../models/Post');
+const jwt = require('jsonwebtoken');
+
+
 
 /**
  * GET /
@@ -9,9 +12,11 @@ const Post = require('../models/Post');
 router.get('', async (req, res) => {
   try {
     const locals = {
-      title: "NodeJs Blog",
+      title: "Dogan's Blog",
       description: ""
     }
+    // Access the token from cookies
+    const token = req.cookies.token;
 
     let perPage = 6;
     let page = req.query.page || 1;
@@ -24,13 +29,16 @@ router.get('', async (req, res) => {
     const count = await Post.count();
     const nextPage = parseInt(page) + 1;
     const hasNextPage = nextPage <= Math.ceil(count / perPage);
-
+  // Set token on res.locals
+    res.locals.token = req.cookies.token;
     res.render('index', { 
       locals,
       data,
       current: page,
       nextPage: hasNextPage ? nextPage : null,
-      currentRoute: '/'
+      currentRoute: '/',
+      token // Include the token in the data passed to the view
+
     });
 
   } catch (error) {
@@ -65,6 +73,38 @@ router.get('/post/:id', async (req, res) => {
     console.log(error);
   }
 
+});
+
+
+
+/**
+ * GET /
+ * Search - Sort
+ */
+router.get('/search', async (req, res) => {
+  try {
+    let sort = {};
+  
+    if (req.query.sort === 'newest') {
+      sort.createdAt = -1; // newest first
+    } else if (req.query.sort === 'oldest') {
+      sort.createdAt = 1; // oldest first
+    }
+
+    const posts = await Post.find({}).sort(sort).exec();
+    
+    res.render('search', { 
+      data: posts,
+      locals: {
+        title: 'Search',
+        description: 'Search Results'
+      },
+      currentRoute: '/search'
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 
@@ -107,12 +147,35 @@ router.post('/search', async (req, res) => {
  * About
 */
 router.get('/about', (req, res) => {
+  const token = req.cookies.token;
   res.render('about', {
-    currentRoute: '/about'
+    
+    currentRoute: '/about',
+    data: {}, // Add any data you want to pass to the "about" page
+    token
   });
 });
 
 
+/**
+ * POST /
+ * Admin - Register
+*/
+// Set token on login
+// router.post('/admin', (req, res) => {
+//   // Login logic
+
+//   const token = jwt.sign({ userId: user._id }, jwtSecret) 
+//   res.cookie('token', token, { httpOnly: true })
+  
+//   res.redirect('/dashboard')
+// })
+
+// // Clear cookie on logout
+// router.get('/logout', (req, res) => {
+//   res.clearCookie('token')
+//   res.redirect('/')
+// })
 
 
 

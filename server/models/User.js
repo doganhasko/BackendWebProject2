@@ -12,14 +12,41 @@ const UserSchema = new Schema({
       },
       message: 'Username cannot contain numbers'
     },
-    minlength: [9, 'Username must be at least 9 characters']
+    minlength: [5, 'Username must be at least 5 characters']
   
   },
   password: {
     type: String,
     required: true,
-    minlength: [9, 'Password must be at least 9 characters'] 
+    minlength: [5, 'Password must be at least 5 characters'] 
 
+  },
+
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator: function(value) {
+        return /\S+@\S+\.\S+/.test(value);
+      },
+      message: 'Invalid email format'
+    }
+  },
+  phone: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function(value) {
+        // Check if the phone number starts with '+32'
+        return value.startsWith('+32');
+      },
+      message: 'Phone number must start with +32'
+    }
+  },
+  address: {
+    type: String, 
+    required: false
   }
 });
 

@@ -9,15 +9,30 @@
       <li>
         <a href="/about" class="">About</a>
       </li>
-
+      <% if (typeof token !== 'undefined') { %>
+        <!-- User is logged in, show "My Profile" and "Log out" -->
+        <li>
+          <a href="/dashboard" >Edit Blog</a>
+        </li>
+        <li>
+          <a href="/profile">My Profile</a>
+        </li>
+        <li>
+          <a href="/logout">Log out</a>
+        </li>
+      <% } else { %>
+        <!-- User is not logged in, show "Log in" -->
+        <li>
+          <a href="/admin" >Log in</a>
+        </li>
+        <li>
+          <a href="/register" >Register</a>
+        </li>
+      <% } %>
     </ul>
 
   </nav>
 
-  <div class="header__button">
-    <a href="/logout">
-      Logout
-    </a>
-  </div>
+
 
 </header>
